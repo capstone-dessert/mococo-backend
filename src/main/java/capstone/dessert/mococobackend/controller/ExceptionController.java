@@ -29,7 +29,6 @@ public class ExceptionController {
         response.setStatus(500);
         return ErrorResponse.builder()
                 .code("500")
-//                .message("서버 내부 오류")
                 .message(e.getMessage())
                 .build();
     }
