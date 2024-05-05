@@ -14,16 +14,16 @@ Content-Type: text/plain
 Jacket
 
 --WebTestBoundary
-Content-Disposition: form-data; name="color"
+Content-Disposition: form-data; name="colors"
 Content-Type: text/plain
 
-Black
+Black, White
 
 --WebTestBoundary
 Content-Disposition: form-data; name="tags"
 Content-Type: text/plain
 
-winter,waterproof
+winter, waterproof
 
 --WebTestBoundary
 Content-Disposition: form-data; name="image"; filename="jacket.jpg"

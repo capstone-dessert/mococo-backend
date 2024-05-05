@@ -1,6 +1,7 @@
 package capstone.dessert.mococobackend.controller;
 
 import capstone.dessert.mococobackend.entity.Clothing;
+import capstone.dessert.mococobackend.entity.Color;
 import capstone.dessert.mococobackend.entity.Tag;
 import capstone.dessert.mococobackend.exception.ImageUploadException;
 import capstone.dessert.mococobackend.request.ClothingRequest;
@@ -34,8 +35,14 @@ public class ClothingController {
             Clothing clothing = new Clothing();
             clothing.setCategory(clothingRequest.getCategory());
             clothing.setSubcategory(clothingRequest.getSubcategory());
-            clothing.setColor(clothingRequest.getColor());
             clothing.setImage(clothingRequest.getImage().getBytes());
+
+            Set<Color> colors = new HashSet<>();
+            for (String colorName : clothingRequest.getColors()) {
+                Color color = new Color(colorName);
+                colors.add(color);
+            }
+            clothing.setColors(colors);
 
             Set<Tag> tags = new HashSet<>();
             for (String tagName : clothingRequest.getTags()) {

@@ -12,9 +12,9 @@ public class ClothingRequest {
 
     private String category;
     private String subcategory;
-    private String color;
-    private MultipartFile image;
+    private Set<String> colors;
     private Set<String> tags; // Assuming tags are provided as a set of strings
+    private MultipartFile image;
 
 }
 

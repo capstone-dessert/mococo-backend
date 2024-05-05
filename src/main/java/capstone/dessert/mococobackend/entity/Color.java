@@ -12,8 +12,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "tags")
-public class Tag {
+@Table(name = "colors")
+public class Color {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +22,10 @@ public class Tag {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "colors")
     private Set<Clothing> clothingItems = new HashSet<>();
 
-    public Tag(String name) {
+    public Color(String name) {
         this.name = name;
     }
 }

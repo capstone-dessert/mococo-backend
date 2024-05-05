@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "clothing")
 public class Clothing {
 
     @Id
@@ -24,12 +25,13 @@ public class Clothing {
     @Column(name = "subcategory")
     private String subcategory;
 
-    @Column(name = "color", nullable = false)
-    private String color;
-
-    @Lob
-    @Column(name = "image", nullable = false, columnDefinition = "BLOB")
-    private byte[] image;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "clothing_colors",
+            joinColumns = @JoinColumn(name = "clothing_id"),
+            inverseJoinColumns = @JoinColumn(name = "color_id")
+    )
+    private Set<Color> colors = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -39,6 +41,10 @@ public class Clothing {
     )
     public Set<Tag> tags = new HashSet<>();
 
+    @Lob
+    @Column(name = "image", nullable = false, columnDefinition = "BLOB")
+    private byte[] image;
+
     public void addTag(Tag tag) {
         tags.add(tag);
         tag.getClothingItems().add(this);
@@ -47,5 +53,15 @@ public class Clothing {
     public void removeTag(Tag tag) {
         tags.remove(tag);
         tag.getClothingItems().remove(this);
+    }
+
+    public void addColor(Color color) {
+        colors.add(color);
+        color.getClothingItems().add(this);
+    }
+
+    public void removeColor(Color color) {
+        colors.remove(color);
+        color.getClothingItems().remove(this);
     }
 }
