@@ -7,9 +7,12 @@ import capstone.dessert.mococobackend.exception.ClothingNotFoundException;
 import capstone.dessert.mococobackend.repository.ClothingRepository;
 import capstone.dessert.mococobackend.repository.ColorRepository;
 import capstone.dessert.mococobackend.repository.TagRepository;
+import capstone.dessert.mococobackend.request.ClothingSearchRequest;
 import capstone.dessert.mococobackend.request.ClothingUpdateRequest;
+import capstone.dessert.mococobackend.specifications.ClothingSpecifications;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -88,6 +91,25 @@ public class ClothingService {
             throw new ClothingNotFoundException();
         }
         clothingRepository.deleteById(id);
+    }
+
+    public List<Clothing> searchClothing(ClothingSearchRequest criteria) {
+        Specification<Clothing> spec = Specification.where(null);
+
+        if (criteria.getCategory() != null) {
+            spec = spec.and(ClothingSpecifications.hasCategory(criteria.getCategory()));
+        }
+        if (criteria.getSubcategory() != null) {
+            spec = spec.and(ClothingSpecifications.hasSubcategory(criteria.getSubcategory()));
+        }
+        if (criteria.getColors() != null && !criteria.getColors().isEmpty()) {
+            spec = spec.and(ClothingSpecifications.hasColors(criteria.getColors()));
+        }
+        if (criteria.getTags() != null && !criteria.getTags().isEmpty()) {
+            spec = spec.and(ClothingSpecifications.hasTags(criteria.getTags()));
+        }
+
+        return clothingRepository.findAll(spec);
     }
 
     private void updateClothingColors(Clothing clothing, Set<String> colorNames) {

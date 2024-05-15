@@ -5,6 +5,7 @@ import capstone.dessert.mococobackend.entity.Color;
 import capstone.dessert.mococobackend.entity.Tag;
 import capstone.dessert.mococobackend.exception.ImageUploadException;
 import capstone.dessert.mococobackend.request.ClothingRequest;
+import capstone.dessert.mococobackend.request.ClothingSearchRequest;
 import capstone.dessert.mococobackend.request.ClothingUpdateRequest;
 import capstone.dessert.mococobackend.response.ClothingResponse;
 import capstone.dessert.mococobackend.service.ClothingService;
@@ -61,6 +62,15 @@ public class ClothingController {
     @DeleteMapping("/{id}")
     public void deleteClothing(@PathVariable("id") Long id) {
         clothingService.deleteClothing(id);
+    }
+
+    @PostMapping("/search")
+    public List<ClothingResponse> searchClothing(@RequestBody ClothingSearchRequest criteria) {
+        List<Clothing> clothing = clothingService.searchClothing(criteria);
+
+        return clothing.stream()
+                .map(ClothingResponse::new)
+                .toList();
     }
 
     private Clothing getClothing(ClothingRequest clothingRequest) {
