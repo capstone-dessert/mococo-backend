@@ -1,15 +1,22 @@
 package capstone.dessert.mococobackend.service;
 
 import capstone.dessert.mococobackend.entity.Clothing;
+import capstone.dessert.mococobackend.entity.Color;
 import capstone.dessert.mococobackend.entity.Tag;
+import capstone.dessert.mococobackend.exception.ClothingNotFoundException;
 import capstone.dessert.mococobackend.repository.ClothingRepository;
+import capstone.dessert.mococobackend.repository.ColorRepository;
 import capstone.dessert.mococobackend.repository.TagRepository;
+import capstone.dessert.mococobackend.request.ClothingUpdateRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -17,13 +24,16 @@ public class ClothingService {
 
     private final ClothingRepository clothingRepository;
     private final TagRepository tagRepository;
+    private final ColorRepository colorRepository;
 
     @Transactional
-    public Clothing save(Clothing clothing) {
+    public void save(Clothing clothing) {
         // Handle the tags: check if they exist, add new if not
         Set<Tag> managedTags = new HashSet<>();
         for (Tag tag : clothing.getTags()) {
-            Tag existingTag = tagRepository.findByName(tag.getName());
+            Tag existingTag = tagRepository.findByName(tag.getName())
+                    .orElse(null);
+
             if (existingTag == null) {
                 // Tag doesn't exist, save it
                 existingTag = tagRepository.save(tag);
@@ -33,6 +43,82 @@ public class ClothingService {
         clothing.setTags(managedTags);
 
         // Now save the clothing, which now includes tags
-        return clothingRepository.save(clothing);
+        clothingRepository.save(clothing);
     }
+
+    public List<Clothing> getAllClothing() {
+        return clothingRepository.findAll();
+    }
+
+    public Clothing getClothingById(Long id) {
+        return clothingRepository.findById(id)
+                .orElseThrow(ClothingNotFoundException::new);
+    }
+
+    public byte[] getClothingImageById(Long id) {
+        Clothing clothing = clothingRepository.findById(id)
+                .orElseThrow(ClothingNotFoundException::new);
+
+        return clothing.getImage();
+    }
+
+    @Transactional
+    public void updateClothing(Long id, ClothingUpdateRequest request) throws IOException {
+        Clothing clothing = clothingRepository.findById(id)
+                .orElseThrow(ClothingNotFoundException::new);
+
+        clothing.setCategory(request.getCategory());
+        clothing.setSubcategory(request.getSubcategory());
+
+        if (request.getImage() != null) {
+            clothing.setImage(request.getImage().getBytes());
+        }
+
+        updateClothingColors(clothing, request.getColors());
+
+
+
+        updateClothingTags(clothing, request.getTags());
+
+        clothingRepository.save(clothing);
+    }
+
+    public void deleteClothing(Long id) {
+        if (!clothingRepository.existsById(id)) {
+            throw new ClothingNotFoundException();
+        }
+        clothingRepository.deleteById(id);
+    }
+
+    private void updateClothingColors(Clothing clothing, Set<String> colorNames) {
+        Set<Color> currentColors = clothing.getColors();
+        Set<Color> newColors = colorNames.stream()
+                .map(name -> colorRepository.findByName(name.toLowerCase())
+                        .orElse(new Color(name.toLowerCase())))
+                .collect(Collectors.toSet());
+
+        // Remove old colors not present in the new set
+        currentColors.removeIf(color -> !newColors.contains(color));
+
+        // Add new colors that are not already present
+        currentColors.addAll(newColors);
+        clothing.setColors(currentColors);
+    }
+
+    private void updateClothingTags(Clothing clothing, Set<String> tagNames) {
+        Set<Tag> managedTags = new HashSet<>();
+        for (String tagName : tagNames) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElse(null);
+            if (tag == null) {
+                tag = new Tag();
+                tag.setName(tagName);
+                tagRepository.save(tag);  // Save new tag to database
+            }
+            managedTags.add(tag);
+        }
+
+        clothing.setTags(managedTags);
+    }
+
 }

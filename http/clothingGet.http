@@ -1,0 +1,11 @@
+### Get a single clothing item by ID
+GET http://localhost:8080/api/clothing/1
+Accept: application/json
+
+### Get all clothing items
+GET http://localhost:8080/api/clothing/all
+Accept: application/json
+
+### Get a clothing images by ID
+GET http://localhost:8080/api/clothing/image/1
+Accept: image/jpeg

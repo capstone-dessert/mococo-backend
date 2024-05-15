@@ -1,0 +1,35 @@
+### Update a Clothing Item
+PUT http://localhost:8080/api/clothing/1
+Content-Type: multipart/form-data; boundary=WebTestBoundary
+
+--WebTestBoundary
+Content-Disposition: form-data; name="category"
+Content-Type: text/plain
+
+Outerwear
+
+--WebTestBoundary
+Content-Disposition: form-data; name="subcategory"
+Content-Type: text/plain
+
+Jacket
+
+--WebTestBoundary
+Content-Disposition: form-data; name="colors"
+Content-Type: text/plain
+
+Red, Blue, White
+
+--WebTestBoundary
+Content-Disposition: form-data; name="tags"
+Content-Type: text/plain
+
+summer
+
+--WebTestBoundary
+Content-Disposition: form-data; name="image"; filename="new_jacket.jpg"
+Content-Type: image/jpeg
+
+< ./11994.jpg
+
+--WebTestBoundary--
