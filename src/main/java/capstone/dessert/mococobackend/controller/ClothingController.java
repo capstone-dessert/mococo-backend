@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class ClothingController {
         return new ClothingResponse(clothing);
     }
 
-    @GetMapping(path = "/image/{id}", produces = IMAGE_JPEG_VALUE)
+    @GetMapping(path = "/image/{id}", produces = IMAGE_PNG_VALUE)
     public byte[] getClothingImageById(@PathVariable("id") Long id) {
         return clothingService.getClothingImageById(id);
     }
