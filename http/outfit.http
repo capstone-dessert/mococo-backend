@@ -1,0 +1,39 @@
+### Add a new outfit
+POST http://localhost:8080/api/outfit/add
+Content-Type: application/json
+
+{
+  "date": "2022-12-01",
+  "schedule": "travel",
+  "clothingIds": [1]
+}
+
+### Get all outfits
+GET http://localhost:8080/api/outfit/all
+Accept: application/json
+
+### Get a single outfit by ID
+GET http://localhost:8080/api/outfit/1
+Accept: application/json
+
+### Get outfits by date
+GET http://localhost:8080/api/outfit/date
+Content-Type: application/json
+
+{
+  "date": "2022-12-01"
+}
+
+### Update an outfit
+PUT http://localhost:8080/api/outfit/update
+Content-Type: application/json
+
+{
+  "id": 1,
+  "date": "2022-12-02",
+  "schedule": "work",
+  "clothingIds": [1]
+}
+
+### Delete an outfit
+DELETE http://localhost:8080/api/outfit/1

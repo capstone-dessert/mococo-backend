@@ -45,6 +45,9 @@ public class Clothing {
     @Column(name = "image", nullable = false, columnDefinition = "BLOB")
     private byte[] image;
 
+    @ManyToMany(mappedBy = "clothingItems")
+    private Set<Outfit> outfits = new HashSet<>();
+
     public void addTag(Tag tag) {
         tags.add(tag);
         tag.getClothingItems().add(this);
