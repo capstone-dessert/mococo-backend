@@ -26,8 +26,8 @@ Content-Type: text/plain
 winter, waterproof
 
 --WebTestBoundary
-Content-Disposition: form-data; name="image"; filename="jacket.jpg"
-Content-Type: image/jpeg
+Content-Disposition: form-data; name="image"; filename="test.png"
+Content-Type: image/png
 
 < ./11994.jpg
 
