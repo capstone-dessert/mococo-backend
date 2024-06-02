@@ -1,21 +1,16 @@
 package capstone.dessert.mococobackend.controller;
 
 import capstone.dessert.mococobackend.entity.Clothing;
-import capstone.dessert.mococobackend.entity.Color;
-import capstone.dessert.mococobackend.entity.Tag;
-import capstone.dessert.mococobackend.exception.ImageUploadException;
 import capstone.dessert.mococobackend.request.ClothingRequest;
 import capstone.dessert.mococobackend.request.ClothingSearchRequest;
 import capstone.dessert.mococobackend.request.ClothingUpdateRequest;
 import capstone.dessert.mococobackend.response.ClothingResponse;
 import capstone.dessert.mococobackend.service.ClothingService;
+import capstone.dessert.mococobackend.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
@@ -28,11 +23,14 @@ public class ClothingController {
 
     private final ClothingService clothingService;
 
+    private final ImageService imageService;
+
     @PostMapping(path = "/add", consumes = MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(value = CREATED)
     public void addClothing(@ModelAttribute ClothingRequest clothingRequest) {
-        Clothing clothing = getClothing(clothingRequest);
-        clothingService.save(clothing);
+        byte[] image = imageService.removeBackground(clothingRequest.getImage());
+
+        clothingService.save(clothingRequest, image);
     }
 
     @GetMapping("/all")
@@ -55,8 +53,14 @@ public class ClothingController {
     }
 
     @PutMapping(path = "/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public void updateClothing(@PathVariable("id") Long id, @ModelAttribute ClothingUpdateRequest request) throws IOException {
-        clothingService.updateClothing(id, request);
+    public void updateClothing(@PathVariable("id") Long id, @ModelAttribute ClothingUpdateRequest request) {
+        byte[] image;
+        if (request.getImage() == null) {
+            image = null;
+        } else {
+            image = imageService.removeBackground(request.getImage());
+        }
+        clothingService.updateClothing(id, request, image);
     }
 
     @DeleteMapping("/{id}")
@@ -72,32 +76,4 @@ public class ClothingController {
                 .map(ClothingResponse::new)
                 .toList();
     }
-
-    private Clothing getClothing(ClothingRequest clothingRequest) {
-        try {
-            Clothing clothing = new Clothing();
-            clothing.setCategory(clothingRequest.getCategory());
-            clothing.setSubcategory(clothingRequest.getSubcategory());
-            clothing.setImage(clothingRequest.getImage().getBytes());
-
-            Set<Color> colors = new HashSet<>();
-            for (String colorName : clothingRequest.getColors()) {
-                Color color = new Color(colorName.toLowerCase());
-                colors.add(color);
-            }
-            clothing.setColors(colors);
-
-            Set<Tag> tags = new HashSet<>();
-            for (String tagName : clothingRequest.getTags()) {
-                Tag tag = new Tag(tagName);
-                tags.add(tag);
-            }
-            clothing.setTags(tags);
-            return clothing;
-        } catch (IOException e) {
-            throw new ImageUploadException();
-        }
-
-    }
-
 }

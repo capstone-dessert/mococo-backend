@@ -27,8 +27,8 @@ Content-Type: text/plain
 summer
 
 --WebTestBoundary
-Content-Disposition: form-data; name="image"; filename="new_jacket.png"
-Content-Type: image/png
+Content-Disposition: form-data; name="image"; filename="new_jacket.jpg"
+Content-Type: image/jpg
 
 < ./11994.jpg
 

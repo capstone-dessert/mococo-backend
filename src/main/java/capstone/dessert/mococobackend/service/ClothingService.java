@@ -7,6 +7,7 @@ import capstone.dessert.mococobackend.exception.ClothingNotFoundException;
 import capstone.dessert.mococobackend.repository.ClothingRepository;
 import capstone.dessert.mococobackend.repository.ColorRepository;
 import capstone.dessert.mococobackend.repository.TagRepository;
+import capstone.dessert.mococobackend.request.ClothingRequest;
 import capstone.dessert.mococobackend.request.ClothingSearchRequest;
 import capstone.dessert.mococobackend.request.ClothingUpdateRequest;
 import capstone.dessert.mococobackend.specifications.ClothingSpecifications;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +30,9 @@ public class ClothingService {
     private final ColorRepository colorRepository;
 
     @Transactional
-    public void save(Clothing clothing) {
+    public void save(ClothingRequest clothingRequest, byte[] image) {
+        Clothing clothing = getClothing(clothingRequest, image);
+
         // Handle the tags: check if they exist, add new if not
         Set<Tag> managedTags = new HashSet<>();
         for (Tag tag : clothing.getTags()) {
@@ -66,21 +68,18 @@ public class ClothingService {
     }
 
     @Transactional
-    public void updateClothing(Long id, ClothingUpdateRequest request) throws IOException {
+    public void updateClothing(Long id, ClothingUpdateRequest request, byte[] image) {
         Clothing clothing = clothingRepository.findById(id)
                 .orElseThrow(ClothingNotFoundException::new);
 
         clothing.setCategory(request.getCategory());
         clothing.setSubcategory(request.getSubcategory());
 
-        if (request.getImage() != null) {
-            clothing.setImage(request.getImage().getBytes());
+        if (image != null) {
+            clothing.setImage(image);
         }
 
         updateClothingColors(clothing, request.getColors());
-
-
-
         updateClothingTags(clothing, request.getTags());
 
         clothingRepository.save(clothing);
@@ -143,4 +142,25 @@ public class ClothingService {
         clothing.setTags(managedTags);
     }
 
+    private Clothing getClothing(ClothingRequest clothingRequest, byte[] image) {
+        Clothing clothing = new Clothing();
+        clothing.setCategory(clothingRequest.getCategory());
+        clothing.setSubcategory(clothingRequest.getSubcategory());
+        clothing.setImage(image);
+
+        Set<Color> colors = new HashSet<>();
+        for (String colorName : clothingRequest.getColors()) {
+            Color color = new Color(colorName.toLowerCase());
+            colors.add(color);
+        }
+        clothing.setColors(colors);
+
+        Set<Tag> tags = new HashSet<>();
+        for (String tagName : clothingRequest.getTags()) {
+            Tag tag = new Tag(tagName);
+            tags.add(tag);
+        }
+        clothing.setTags(tags);
+        return clothing;
+    }
 }
