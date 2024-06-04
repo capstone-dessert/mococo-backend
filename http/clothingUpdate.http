@@ -1,5 +1,5 @@
 ### Update a Clothing Item
-PUT http://localhost:8080/api/clothing/1
+PUT http://localhost:30000/api/clothing/1
 Content-Type: multipart/form-data; boundary=WebTestBoundary
 
 --WebTestBoundary

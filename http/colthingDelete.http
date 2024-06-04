@@ -1,2 +1,2 @@
 ### Delete a Clothing Item by ID
-DELETE http://localhost:8080/api/clothing/1
+DELETE http://localhost:30000/api/clothing/1

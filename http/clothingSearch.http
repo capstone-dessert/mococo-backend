@@ -1,5 +1,5 @@
 ### Search Clothing by Category Only
-POST http://localhost:8080/api/clothing/search
+POST http://localhost:30000/api/clothing/search
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
 ###
 
 ### Search Clothing by Category and Subcategory
-POST http://localhost:8080/api/clothing/search
+POST http://localhost:30000/api/clothing/search
 Content-Type: application/json
 
 {
@@ -20,7 +20,7 @@ Content-Type: application/json
 ###
 
 ### Search Clothing by Colors
-POST http://localhost:8080/api/clothing/search
+POST http://localhost:30000/api/clothing/search
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 ###
 
 ### Search Clothing by Tags
-POST http://localhost:8080/api/clothing/search
+POST http://localhost:30000/api/clothing/search
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 ###
 
 ### Search Clothing by Combination of All Criteria
-POST http://localhost:8080/api/clothing/search
+POST http://localhost:30000/api/clothing/search
 Content-Type: application/json
 
 {

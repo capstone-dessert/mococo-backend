@@ -1,5 +1,6 @@
 package capstone.dessert.mococobackend.controller;
 
+import capstone.dessert.mococobackend.response.ImageInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -29,7 +30,7 @@ public class ImageController {
     private final RestTemplate restTemplate;
 
     @PostMapping(path = "/classify", consumes = MULTIPART_FORM_DATA_VALUE)
-    public String classifyImage(@RequestParam("file") MultipartFile file) {
+    public ImageInfoResponse classifyImage(@RequestParam("file") MultipartFile file) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MULTIPART_FORM_DATA);
 
@@ -38,11 +39,11 @@ public class ImageController {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<ImageInfoResponse> response = restTemplate.exchange(
                 apiUrl + "/predict",
                 HttpMethod.POST,
                 requestEntity,
-                String.class
+                ImageInfoResponse.class
         );
 
         return response.getBody();

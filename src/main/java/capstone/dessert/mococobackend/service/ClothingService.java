@@ -150,7 +150,7 @@ public class ClothingService {
 
         Set<Color> colors = new HashSet<>();
         for (String colorName : clothingRequest.getColors()) {
-            Color color = new Color(colorName.toLowerCase());
+            Color color = colorRepository.findByName(colorName.toLowerCase()).orElse(new Color(colorName.toLowerCase()));
             colors.add(color);
         }
         clothing.setColors(colors);

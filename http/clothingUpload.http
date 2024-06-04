@@ -1,32 +1,32 @@
-POST http://localhost:8080/api/clothing/add
+POST http://localhost:30000/api/clothing/add
 Content-Type: multipart/form-data; boundary=WebTestBoundary
 
 --WebTestBoundary
 Content-Disposition: form-data; name="category"
 Content-Type: text/plain
 
-Outerwear
+top
 
 --WebTestBoundary
 Content-Disposition: form-data; name="subcategory"
 Content-Type: text/plain
 
-Jacket
+shirt
 
 --WebTestBoundary
 Content-Disposition: form-data; name="colors"
 Content-Type: text/plain
 
-Black, White
+Black, white
 
 --WebTestBoundary
 Content-Disposition: form-data; name="tags"
 Content-Type: text/plain
 
-winter, waterproof
+winter
 
 --WebTestBoundary
-Content-Disposition: form-data; name="image"; filename="test.jpg"
+Content-Disposition: form-data; name="image"; filename="test2.jpg"
 Content-Type: image/jpeg
 
 < ./11994.jpg
