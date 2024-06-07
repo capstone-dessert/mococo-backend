@@ -27,6 +27,12 @@ Content-Type: text/plain
 summer
 
 --WebTestBoundary
+Content-Disposition: form-data; name="styles"
+Content-Type: text/plain
+
+페미닌
+
+--WebTestBoundary
 Content-Disposition: form-data; name="image"; filename="new_jacket.jpg"
 Content-Type: image/jpg
 

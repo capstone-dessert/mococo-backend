@@ -17,7 +17,7 @@ shirt
 Content-Disposition: form-data; name="colors"
 Content-Type: text/plain
 
-Black, white
+Black, White
 
 --WebTestBoundary
 Content-Disposition: form-data; name="tags"
@@ -26,9 +26,15 @@ Content-Type: text/plain
 winter
 
 --WebTestBoundary
+Content-Disposition: form-data; name="styles"
+Content-Type: text/plain
+
+댄디, 포멀
+
+--WebTestBoundary
 Content-Disposition: form-data; name="image"; filename="test2.jpg"
 Content-Type: image/jpeg
 
-< ./11994.jpg
+< ./test2.jpg
 
 --WebTestBoundary--

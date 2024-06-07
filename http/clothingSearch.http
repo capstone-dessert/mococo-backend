@@ -49,3 +49,11 @@ Content-Type: application/json
   "colors": ["Black"],
   "tags": ["formal", "winter"]
 }
+
+###
+POST http://localhost:30000/api/clothing/search
+Content-Type: application/json
+
+{
+  "styles": ["페미닌"]
+}
