@@ -2,10 +2,12 @@ package capstone.dessert.mococobackend.service;
 
 import capstone.dessert.mococobackend.entity.Clothing;
 import capstone.dessert.mococobackend.entity.Color;
+import capstone.dessert.mococobackend.entity.Outfit;
 import capstone.dessert.mococobackend.entity.Tag;
 import capstone.dessert.mococobackend.exception.ClothingNotFoundException;
 import capstone.dessert.mococobackend.repository.ClothingRepository;
 import capstone.dessert.mococobackend.repository.ColorRepository;
+import capstone.dessert.mococobackend.repository.OutfitRepository;
 import capstone.dessert.mococobackend.repository.TagRepository;
 import capstone.dessert.mococobackend.request.ClothingRequest;
 import capstone.dessert.mococobackend.request.ClothingSearchRequest;
@@ -28,6 +30,7 @@ public class ClothingService {
     private final ClothingRepository clothingRepository;
     private final TagRepository tagRepository;
     private final ColorRepository colorRepository;
+    private final OutfitRepository outfitRepository;
 
     @Transactional
     public void save(ClothingRequest clothingRequest, byte[] image) {
@@ -87,6 +90,9 @@ public class ClothingService {
 
     @Transactional
     public void deleteClothing(Long id) {
+
+        List<Outfit> outfits = outfitRepository.findByClothingId(id);
+        outfitRepository.deleteAll(outfits);
 
         Clothing clothing = clothingRepository.findById(id)
                 .orElseThrow(ClothingNotFoundException::new);
