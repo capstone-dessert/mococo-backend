@@ -85,10 +85,16 @@ public class ClothingService {
         clothingRepository.save(clothing);
     }
 
+    @Transactional
     public void deleteClothing(Long id) {
-        if (!clothingRepository.existsById(id)) {
-            throw new ClothingNotFoundException();
+
+        Clothing clothing = clothingRepository.findById(id)
+                .orElseThrow(ClothingNotFoundException::new);
+
+        for (Color color : clothing.getColors()) {
+            clothing.removeColor(color);
         }
+
         clothingRepository.deleteById(id);
     }
 
