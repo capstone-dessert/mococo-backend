@@ -91,9 +91,7 @@ public class ClothingService {
         Clothing clothing = clothingRepository.findById(id)
                 .orElseThrow(ClothingNotFoundException::new);
 
-        for (Color color : clothing.getColors()) {
-            clothing.removeColor(color);
-        }
+        clothing.getColors().clear();
 
         clothingRepository.deleteById(id);
     }
