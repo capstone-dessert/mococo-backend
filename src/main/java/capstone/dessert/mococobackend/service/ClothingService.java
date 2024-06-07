@@ -1,9 +1,6 @@
 package capstone.dessert.mococobackend.service;
 
-import capstone.dessert.mococobackend.entity.Clothing;
-import capstone.dessert.mococobackend.entity.Color;
-import capstone.dessert.mococobackend.entity.Outfit;
-import capstone.dessert.mococobackend.entity.Tag;
+import capstone.dessert.mococobackend.entity.*;
 import capstone.dessert.mococobackend.exception.ClothingNotFoundException;
 import capstone.dessert.mococobackend.repository.ClothingRepository;
 import capstone.dessert.mococobackend.repository.ColorRepository;
@@ -85,6 +82,13 @@ public class ClothingService {
         updateClothingColors(clothing, request.getColors());
         updateClothingTags(clothing, request.getTags());
 
+        Set<Style> styles = request.getStyles()
+                .stream()
+                .map(Style::fromDisplayName)
+                .collect(Collectors.toSet());
+
+        clothing.setStyles(styles);
+
         clothingRepository.save(clothing);
     }
 
@@ -116,6 +120,12 @@ public class ClothingService {
         }
         if (criteria.getTags() != null && !criteria.getTags().isEmpty()) {
             spec = spec.and(ClothingSpecifications.hasTags(criteria.getTags()));
+        }
+        if (criteria.getStyles() != null && !criteria.getStyles().isEmpty()) {
+            Set<Style> styles = criteria.getStyles().stream()
+                    .map(Style::fromDisplayName)
+                    .collect(Collectors.toSet());
+            spec = spec.and(ClothingSpecifications.hasStyles(styles));
         }
 
         return clothingRepository.findAll(spec);
@@ -171,6 +181,14 @@ public class ClothingService {
             tags.add(tag);
         }
         clothing.setTags(tags);
+
+        Set<Style> styles = clothingRequest.getStyles()
+                .stream()
+                .map(Style::fromDisplayName)
+                .collect(Collectors.toSet());
+
+        clothing.setStyles(styles);
+
         return clothing;
     }
 }

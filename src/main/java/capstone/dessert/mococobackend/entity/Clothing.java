@@ -48,6 +48,12 @@ public class Clothing {
     @ManyToMany(mappedBy = "clothingItems")
     private Set<Outfit> outfits = new HashSet<>();
 
+    @ElementCollection(targetClass = Style.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "clothing_style", joinColumns = @JoinColumn(name = "clothing_id"))
+    @Column(name = "style", nullable = false)
+    private Set<Style> styles = new HashSet<>();
+
     public void addTag(Tag tag) {
         tags.add(tag);
         tag.getClothingItems().add(this);

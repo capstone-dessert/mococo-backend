@@ -2,6 +2,7 @@ package capstone.dessert.mococobackend.specifications;
 
 import capstone.dessert.mococobackend.entity.Clothing;
 import capstone.dessert.mococobackend.entity.Color;
+import capstone.dessert.mococobackend.entity.Style;
 import capstone.dessert.mococobackend.entity.Tag;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,4 +35,12 @@ public class ClothingSpecifications {
             return tagJoin.get("name").in(tags);
         };
     }
+
+    public static Specification<Clothing> hasStyles(Set<Style> styles) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Clothing, Style> styleJoin = root.join("styles");
+            return styleJoin.in(styles);
+        };
+    }
+
 }
