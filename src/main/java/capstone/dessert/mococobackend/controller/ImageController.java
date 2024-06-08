@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static org.springframework.http.MediaType.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,7 +28,7 @@ public class ImageController {
 
     private final RestTemplate restTemplate;
 
-    @PostMapping(path = "/classify", consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/classify", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     public ImageInfoResponse classifyImage(@RequestParam("file") MultipartFile file) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MULTIPART_FORM_DATA);

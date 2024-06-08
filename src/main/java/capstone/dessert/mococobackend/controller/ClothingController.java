@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static org.springframework.http.MediaType.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,7 +32,7 @@ public class ClothingController {
         clothingService.save(clothingRequest, image);
     }
 
-    @GetMapping("/all")
+    @GetMapping(path = "/all", produces = APPLICATION_JSON_VALUE)
     public List<ClothingResponse> getAllClothing() {
         List<Clothing> clothingList = clothingService.getAllClothing();
         return clothingList.stream()
@@ -41,7 +40,7 @@ public class ClothingController {
                 .toList();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
     public ClothingResponse getClothingById(@PathVariable("id") Long id) {
         Clothing clothing = clothingService.getClothingById(id);
         return new ClothingResponse(clothing);
@@ -68,7 +67,7 @@ public class ClothingController {
         clothingService.deleteClothing(id);
     }
 
-    @PostMapping("/search")
+    @PostMapping(path = "/search", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public List<ClothingResponse> searchClothing(@RequestBody ClothingSearchRequest criteria) {
         List<Clothing> clothing = clothingService.searchClothing(criteria);
 
