@@ -21,7 +21,7 @@ public class OutfitResponse {
     public OutfitResponse(Outfit outfit) {
         this.id = outfit.getId();
         this.date = outfit.getDate();
-        this.schedule = outfit.getSchedule();
+        this.schedule = outfit.getSchedule().getDisplayName();
         this.clothingItems = outfit.getClothingItems()
                 .stream()
                 .map(ClothingResponse::new)

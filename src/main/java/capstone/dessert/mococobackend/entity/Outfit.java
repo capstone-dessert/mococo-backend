@@ -23,8 +23,9 @@ public class Outfit {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "schedule", nullable = true)
-    private String schedule;
+    @Column(name = "schedule", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Schedule schedule;
 
     @ManyToMany
     @JoinTable(

@@ -2,6 +2,7 @@ package capstone.dessert.mococobackend.service;
 
 import capstone.dessert.mococobackend.entity.Clothing;
 import capstone.dessert.mococobackend.entity.Outfit;
+import capstone.dessert.mococobackend.entity.Schedule;
 import capstone.dessert.mococobackend.exception.ClothingNotFoundException;
 import capstone.dessert.mococobackend.exception.OutfitNotFoundException;
 import capstone.dessert.mococobackend.repository.ClothingRepository;
@@ -36,7 +37,7 @@ public class OutfitService {
 
         Outfit outfit = new Outfit();
         outfit.setDate(outfitCreateRequest.getDate());
-        outfit.setSchedule(outfitCreateRequest.getSchedule());
+        outfit.setSchedule(Schedule.fromDisplayName(outfitCreateRequest.getSchedule()));
         outfit.setClothingItems(clothingItems);
 
         outfitRepository.save(outfit);
@@ -67,7 +68,7 @@ public class OutfitService {
                 .orElseThrow(OutfitNotFoundException::new);
 
         outfit.setDate(outfitUpdateRequest.getDate());
-        outfit.setSchedule(outfitUpdateRequest.getSchedule());
+        outfit.setSchedule(Schedule.fromDisplayName(outfitUpdateRequest.getSchedule()));
 
         Set<Clothing> clothingItems = outfitUpdateRequest.getClothingIds()
                 .stream()
