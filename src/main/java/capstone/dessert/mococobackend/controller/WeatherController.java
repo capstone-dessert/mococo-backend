@@ -1,5 +1,6 @@
 package capstone.dessert.mococobackend.controller;
 
+import capstone.dessert.mococobackend.request.WeatherAddressRequest;
 import capstone.dessert.mococobackend.request.WeatherGeoRequest;
 import capstone.dessert.mococobackend.response.WeatherResponse;
 import capstone.dessert.mococobackend.service.WeatherService;
@@ -16,11 +17,10 @@ public class WeatherController {
 
     private final WeatherService weatherService;
 
-    // todo: implement
-//    @GetMapping("/district")
-//    public WeatherResponse getWeatherByDistrict(@RequestBody WeatherDistrictRequest weatherRequest) {
-//        return null;
-//    }
+    @GetMapping("/address")
+    public WeatherResponse getWeatherByDistrict(@RequestBody WeatherAddressRequest weatherRequest) {
+        return weatherService.searchWeatherAddress(weatherRequest);
+    }
 
     @GetMapping(path = "/geo", consumes = "application/json", produces = "application/json")
     public WeatherResponse getWeatherByGeo(@RequestBody WeatherGeoRequest weatherRequest) {

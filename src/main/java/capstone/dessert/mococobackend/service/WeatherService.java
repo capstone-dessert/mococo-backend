@@ -1,13 +1,17 @@
 package capstone.dessert.mococobackend.service;
 
 import capstone.dessert.mococobackend.exception.KakaoGeoAPIException;
+import capstone.dessert.mococobackend.exception.KakaoSearchAPIException;
 import capstone.dessert.mococobackend.exception.WeatherAPIException;
+import capstone.dessert.mococobackend.request.WeatherAddressRequest;
 import capstone.dessert.mococobackend.request.WeatherGeoRequest;
 import capstone.dessert.mococobackend.response.KakaoGeoResponse;
+import capstone.dessert.mococobackend.response.KakaoSearchResponse;
 import capstone.dessert.mococobackend.response.WeatherAPIResponse;
 import capstone.dessert.mococobackend.response.WeatherResponse;
 import capstone.dessert.mococobackend.util.CoordinateConvertor;
 import capstone.dessert.mococobackend.util.CoordinateConvertor.LatXLngY;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -26,6 +30,8 @@ public class WeatherService {
 
     private final RestTemplate restTemplate;
 
+    private final HttpHeaders kakaoAPIHeader;
+
     @Value("${weather.api.url}")
     private String weatherAPIUrl;
 
@@ -35,12 +41,35 @@ public class WeatherService {
     @Value("${kakao.api.geo.url}")
     private String kakaoGeoAPIUrl;
 
-    @Value("${kakao.api.key}")
-    private String kakaoAPIKey;
+    @Value("${kakao.api.search.url}")
+    private String kakaoSearchAPIUrl;
 
     public WeatherResponse searchWeatherByGeo(WeatherGeoRequest weatherRequest) {
         LatXLngY latXLngY = CoordinateConvertor.convertGpsToGrid(weatherRequest.getLatitude(), weatherRequest.getLongitude());
 
+        WeatherAPIResponse.Response.Body.Items items = requestWeatherAPI(latXLngY);
+
+        WeatherResponse weatherResponse = getWeatherResponse(weatherRequest.getDate(), items);
+        weatherResponse.setAddressName(coordToAddressName(weatherRequest.getLatitude(), weatherRequest.getLongitude()));
+
+        return weatherResponse;
+    }
+
+    private WeatherResponse getWeatherResponse(LocalDate date, WeatherAPIResponse.Response.Body.Items items) {
+        List<WeatherAPIResponse.Response.Body.Items.Item> filteredItems = items.getItemList().stream()
+                .filter(item -> localDateToString(date).equals(item.getFcstDate()) && (
+                                "TMX".equals(item.getCategory()) ||
+                                        "TMN".equals(item.getCategory()) ||
+                                        ("PTY".equals(item.getCategory()) && "1500".equals(item.getFcstTime())) ||
+                                        ("SKY".equals(item.getCategory()) && "1500".equals(item.getFcstTime()))
+                        )
+                )
+                .toList();
+
+        return getWeatherResponse(filteredItems);
+    }
+
+    private WeatherAPIResponse.Response.Body.Items requestWeatherAPI(LatXLngY latXLngY) {
         String requestUrl = String.format(
                 "%s?serviceKey=%s&pageNo=%d&numOfRows=%d&dataType=%s&base_date=%s&base_time=%s&nx=%d&ny=%d",
                 weatherAPIUrl,
@@ -59,22 +88,7 @@ public class WeatherService {
         if (response == null || response.getResponse() == null) {
             throw new WeatherAPIException();
         }
-        WeatherAPIResponse.Response.Body.Items items = response.getResponse().getBody().getItems();
-
-        List<WeatherAPIResponse.Response.Body.Items.Item> filteredItems = items.getItemList().stream()
-                .filter(item -> localDateToString(weatherRequest.getDate()).equals(item.getFcstDate()) && (
-                                "TMX".equals(item.getCategory()) ||
-                                        "TMN".equals(item.getCategory()) ||
-                                        ("PTY".equals(item.getCategory()) && "1500".equals(item.getFcstTime())) ||
-                                        ("SKY".equals(item.getCategory()) && "1500".equals(item.getFcstTime()))
-                        )
-                )
-                .toList();
-
-        WeatherResponse weatherResponse = getWeatherResponse(filteredItems);
-        weatherResponse.setAddressName(coordToAddressName(weatherRequest.getLatitude(), weatherRequest.getLongitude()));
-
-        return weatherResponse;
+        return response.getResponse().getBody().getItems();
     }
 
     private String coordToAddressName(double latitude, double longitude) {
@@ -85,10 +99,7 @@ public class WeatherService {
                 latitude
         );
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoAPIKey);
-
-        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+        HttpEntity<String> entity = new HttpEntity<>("parameters", kakaoAPIHeader);
 
         ResponseEntity<KakaoGeoResponse> responseEntity = restTemplate.exchange(
                 requestUrl,
@@ -130,5 +141,64 @@ public class WeatherService {
 
     public static String localDateToString(LocalDate date) {
         return String.join("", date.toString().split("-"));
+    }
+
+    /**
+     * 1. 주소를 위도 경도로 변환
+     * 2. 위도 경도를 x, y좌표로 변환
+     * 3. x, y좌표로 날씨 정보 요청
+     * 4. 응답을 WeatherResponse로 변환
+     * 5. 반환
+     */
+    public WeatherResponse searchWeatherAddress(WeatherAddressRequest weatherRequest) {
+        Coordinate coord = addressToCoord(weatherRequest.getAddress());
+        LatXLngY latXLngY = CoordinateConvertor.convertGpsToGrid(coord.latitude, coord.longitude);
+
+        WeatherAPIResponse.Response.Body.Items items = requestWeatherAPI(latXLngY);
+        WeatherResponse weatherResponse = getWeatherResponse(weatherRequest.getDate(), items);
+        weatherResponse.setAddressName(weatherRequest.getAddress());
+
+        return weatherResponse;
+    }
+
+    /**
+     * 1. 주소를 위도 경도로 변환
+     * 2. 반환
+     */
+    private Coordinate addressToCoord(String address) {
+        String requestUrl = String.format(
+                "%s?analyze_type=similar&query=%s",
+                kakaoSearchAPIUrl,
+                address
+        );
+
+        HttpEntity<String> entity = new HttpEntity<>("parameters", kakaoAPIHeader);
+
+        ResponseEntity<KakaoSearchResponse> responseEntity = restTemplate.exchange(
+                requestUrl,
+                HttpMethod.GET,
+                entity,
+                KakaoSearchResponse.class
+        );
+
+        KakaoSearchResponse response = responseEntity.getBody();
+        if (response == null || response.getDocuments() == null || response.getDocuments().isEmpty()) {
+            throw new KakaoSearchAPIException();
+        }
+        return Coordinate.builder()
+                .latitude(response.getDocuments().getFirst().getY())
+                .longitude(response.getDocuments().getFirst().getX())
+                .build();
+    }
+
+    @Builder
+    private static class Coordinate {
+        private double latitude;
+        private double longitude;
+
+        public Coordinate(double latitude, double longitude) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
     }
 }
