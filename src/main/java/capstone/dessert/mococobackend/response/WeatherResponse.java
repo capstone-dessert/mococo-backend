@@ -5,6 +5,10 @@ import lombok.Setter;
 
 @Getter
 public class WeatherResponse {
+
+    @Setter
+    private String addressName;
+
     // 최고기온, 최저기온, 강수형태, 하늘상태
     @Setter
     private double maxTemperature;

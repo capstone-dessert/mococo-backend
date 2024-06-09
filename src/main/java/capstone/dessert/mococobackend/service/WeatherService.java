@@ -1,12 +1,19 @@
 package capstone.dessert.mococobackend.service;
 
+import capstone.dessert.mococobackend.exception.KakaoGeoAPIException;
+import capstone.dessert.mococobackend.exception.WeatherAPIException;
 import capstone.dessert.mococobackend.request.WeatherGeoRequest;
+import capstone.dessert.mococobackend.response.KakaoGeoResponse;
 import capstone.dessert.mococobackend.response.WeatherAPIResponse;
 import capstone.dessert.mococobackend.response.WeatherResponse;
 import capstone.dessert.mococobackend.util.CoordinateConvertor;
 import capstone.dessert.mococobackend.util.CoordinateConvertor.LatXLngY;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,18 +27,24 @@ public class WeatherService {
     private final RestTemplate restTemplate;
 
     @Value("${weather.api.url}")
-    private String apiUrl;
+    private String weatherAPIUrl;
 
     @Value("${weather.api.key}")
-    private String serviceKey;
+    private String weatherAPIKey;
+
+    @Value("${kakao.api.geo.url}")
+    private String kakaoGeoAPIUrl;
+
+    @Value("${kakao.api.key}")
+    private String kakaoAPIKey;
 
     public WeatherResponse searchWeatherByGeo(WeatherGeoRequest weatherRequest) {
         LatXLngY latXLngY = CoordinateConvertor.convertGpsToGrid(weatherRequest.getLatitude(), weatherRequest.getLongitude());
 
         String requestUrl = String.format(
                 "%s?serviceKey=%s&pageNo=%d&numOfRows=%d&dataType=%s&base_date=%s&base_time=%s&nx=%d&ny=%d",
-                apiUrl,
-                serviceKey,
+                weatherAPIUrl,
+                weatherAPIKey,
                 1,
                 1000,
                 "JSON",
@@ -44,7 +57,7 @@ public class WeatherService {
         WeatherAPIResponse response = restTemplate.getForObject(requestUrl, WeatherAPIResponse.class);
 
         if (response == null || response.getResponse() == null) {
-            return null;
+            throw new WeatherAPIException();
         }
         WeatherAPIResponse.Response.Body.Items items = response.getResponse().getBody().getItems();
 
@@ -58,7 +71,38 @@ public class WeatherService {
                 )
                 .toList();
 
-        return getWeatherResponse(filteredItems);
+        WeatherResponse weatherResponse = getWeatherResponse(filteredItems);
+        weatherResponse.setAddressName(coordToAddressName(weatherRequest.getLatitude(), weatherRequest.getLongitude()));
+
+        return weatherResponse;
+    }
+
+    private String coordToAddressName(double latitude, double longitude) {
+        String requestUrl = String.format(
+                "%s?x=%f&y=%f",
+                kakaoGeoAPIUrl,
+                longitude,
+                latitude
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "KakaoAK " + kakaoAPIKey);
+
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
+        ResponseEntity<KakaoGeoResponse> responseEntity = restTemplate.exchange(
+                requestUrl,
+                HttpMethod.GET,
+                entity,
+                KakaoGeoResponse.class
+        );
+
+        KakaoGeoResponse response = responseEntity.getBody();
+        if (response == null || response.getDocuments() == null || response.getDocuments().isEmpty()) {
+            throw new KakaoGeoAPIException();
+        }
+
+        return response.getDocuments().getFirst().getAddressName();
     }
 
     private WeatherResponse getWeatherResponse(List<WeatherAPIResponse.Response.Body.Items.Item> filteredItems) {
