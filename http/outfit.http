@@ -4,8 +4,15 @@ Content-Type: application/json
 
 {
   "date": "2022-12-01",
-  "schedule": "travel",
-  "clothingIds": [1]
+  "schedule": "발표",
+  "clothingIds": [
+    1
+  ],
+  "addressName": "서울특별시 강남구 역삼동",
+  "maxTemperature": 10,
+  "minTemperature": 5,
+  "precipitationType": "비",
+  "sky": "맑음"
 }
 
 ### Get all outfits

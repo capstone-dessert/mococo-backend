@@ -17,7 +17,7 @@ public class WeatherController {
 
     private final WeatherService weatherService;
 
-    @GetMapping("/address")
+    @GetMapping(path = "/address", consumes = "application/json", produces = "application/json")
     public WeatherResponse getWeatherByDistrict(@RequestBody WeatherAddressRequest weatherRequest) {
         return weatherService.searchWeatherAddress(weatherRequest);
     }

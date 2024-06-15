@@ -15,4 +15,14 @@ public class OutfitCreateRequest {
     private String schedule;
 
     private List<Long> clothingIds;
+
+    private String addressName;
+
+    private double maxTemperature;
+
+    private double minTemperature;
+
+    private String precipitationType;
+
+    private String sky;
 }

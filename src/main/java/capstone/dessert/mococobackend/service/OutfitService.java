@@ -3,6 +3,7 @@ package capstone.dessert.mococobackend.service;
 import capstone.dessert.mococobackend.entity.Clothing;
 import capstone.dessert.mococobackend.entity.Outfit;
 import capstone.dessert.mococobackend.entity.Schedule;
+import capstone.dessert.mococobackend.entity.Weather;
 import capstone.dessert.mococobackend.exception.ClothingNotFoundException;
 import capstone.dessert.mococobackend.exception.OutfitNotFoundException;
 import capstone.dessert.mococobackend.repository.ClothingRepository;
@@ -39,6 +40,15 @@ public class OutfitService {
         outfit.setDate(outfitCreateRequest.getDate());
         outfit.setSchedule(Schedule.fromDisplayName(outfitCreateRequest.getSchedule()));
         outfit.setClothingItems(clothingItems);
+
+        Weather weather = new Weather();
+        weather.setAddressName(outfitCreateRequest.getAddressName());
+        weather.setMaxTemperature(outfitCreateRequest.getMaxTemperature());
+        weather.setMinTemperature(outfitCreateRequest.getMinTemperature());
+        weather.setPrecipitationType(outfitCreateRequest.getPrecipitationType());
+        weather.setSky(outfitCreateRequest.getSky());
+        
+        outfit.setWeather(weather);
 
         outfitRepository.save(outfit);
     }
@@ -77,6 +87,19 @@ public class OutfitService {
                 .collect(Collectors.toSet());
 
         updateOutfitClothing(outfit, clothingItems);
+
+        updateWeather(outfit, outfitUpdateRequest);
+    }
+
+    private void updateWeather(Outfit outfit, OutfitUpdateRequest outfitUpdateRequest) {
+        Weather weather = new Weather();
+        weather.setAddressName(outfitUpdateRequest.getAddressName());
+        weather.setMaxTemperature(outfitUpdateRequest.getMaxTemperature());
+        weather.setMinTemperature(outfitUpdateRequest.getMinTemperature());
+        weather.setPrecipitationType(outfitUpdateRequest.getPrecipitationType());
+        weather.setSky(outfitUpdateRequest.getSky());
+
+        outfit.setWeather(weather);
     }
 
     private void updateOutfitClothing(Outfit outfit, Set<Clothing> clothingItems) {

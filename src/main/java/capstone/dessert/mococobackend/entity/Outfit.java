@@ -35,6 +35,9 @@ public class Outfit {
     )
     private Set<Clothing> clothingItems = new HashSet<>();
 
+    @Embedded
+    private Weather weather;
+
     public void addClothing(Clothing clothing) {
         clothingItems.add(clothing);
         clothing.getOutfits().add(this);
