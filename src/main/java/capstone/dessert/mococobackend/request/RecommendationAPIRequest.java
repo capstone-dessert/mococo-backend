@@ -5,9 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RecommendRequest {
+public class RecommendationAPIRequest {
 
-    private int minTemperature;
-    private int maxTemperature;
+    private int min_temperature;
+
+    private int max_temperature;
+
     private String schedule;
 }

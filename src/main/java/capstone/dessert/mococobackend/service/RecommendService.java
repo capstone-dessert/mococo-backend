@@ -2,6 +2,7 @@ package capstone.dessert.mococobackend.service;
 
 import capstone.dessert.mococobackend.exception.RecommendationAPIException;
 import capstone.dessert.mococobackend.request.RecommendRequest;
+import capstone.dessert.mococobackend.request.RecommendationAPIRequest;
 import capstone.dessert.mococobackend.response.RecommendResponse;
 import capstone.dessert.mococobackend.response.RecommendationAPIResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.http.HttpMethod.POST;
@@ -30,12 +29,12 @@ public class RecommendService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("min_temperature", recommendRequest.getMinTemperature());
-        body.add("max_temperature", recommendRequest.getMaxTemperature());
-        body.add("schedule", recommendRequest.getSchedule());
+        RecommendationAPIRequest request = new RecommendationAPIRequest();
+        request.setMin_temperature(recommendRequest.getMinTemperature());
+        request.setMax_temperature(recommendRequest.getMaxTemperature());
+        request.setSchedule(recommendRequest.getSchedule());
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        HttpEntity<RecommendationAPIRequest> requestEntity = new HttpEntity<>(request, headers);
 
         ResponseEntity<RecommendationAPIResponse> response = restTemplate.exchange(
                 apiUrl + "/recommend",
@@ -44,12 +43,16 @@ public class RecommendService {
                 RecommendationAPIResponse.class
         );
 
-        if (response.getStatusCode().value() % 100 != 2) {
-            throw new RecommendationAPIException();
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RecommendationAPIException("response status code is not 2xx");
         }
 
         if (response.getBody() == null) {
             throw new RecommendationAPIException("response body is null");
+        }
+
+        if (response.getBody().getIds().isEmpty()) {
+            throw new RecommendationAPIException("nothing to recommend");
         }
 
         return new RecommendResponse(response.getBody());
