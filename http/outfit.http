@@ -1,19 +1,67 @@
 ### Add a new outfit
 POST http://localhost:30000/api/outfit/add
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=WebTestBoundary
 
-{
-  "date": "2022-12-01",
-  "schedule": "발표",
-  "clothingIds": [
-    1
-  ],
-  "addressName": "서울특별시 강남구 역삼동",
-  "maxTemperature": 10,
-  "minTemperature": 5,
-  "precipitationType": "비",
-  "sky": "맑음"
-}
+--WebTestBoundary
+Content-Disposition: form-data; name="date"
+Content-Type: text/plain
+
+2022-12-01
+
+--WebTestBoundary
+Content-Disposition: form-data; name="schedule"
+Content-Type: text/plain
+
+발표
+
+--WebTestBoundary
+Content-Disposition: form-data; name="clothingIds"
+Content-Type: text/plain
+
+1
+
+--WebTestBoundary
+Content-Disposition: form-data; name="addressName"
+Content-Type: text/plain
+
+서울특별시 강남구 역삼동
+
+--WebTestBoundary
+Content-Disposition: form-data; name="maxTemperature"
+Content-Type: text/plain
+
+10
+
+--WebTestBoundary
+Content-Disposition: form-data; name="minTemperature"
+Content-Type: text/plain
+
+5
+
+--WebTestBoundary
+Content-Disposition: form-data; name="precipitationType"
+Content-Type: text/plain
+
+비
+
+--WebTestBoundary
+Content-Disposition: form-data; name="sky"
+Content-Type: text/plain
+
+맑음
+
+--WebTestBoundary--
+Content-Disposition: form-data; name="image"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./11994.jpg
+
+--WebTestBoundary--
+
+### Get outfit image
+GET http://localhost:30000/api/outfit/image/1
+Accept: image/jpeg
+
 
 ### Get all outfits
 GET http://localhost:30000/api/outfit/all
@@ -33,14 +81,69 @@ Content-Type: application/json
 
 ### Update an outfit
 PUT http://localhost:30000/api/outfit/update
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=WebTestBoundary
 
-{
-  "id": 1,
-  "date": "2022-12-02",
-  "schedule": "work",
-  "clothingIds": [1]
-}
+--WebTestBoundary
+Content-Disposition: form-data; name="id"
+Content-Type: text/plain
+
+1
+
+--WebTestBoundary
+Content-Disposition: form-data; name="date"
+Content-Type: text/plain
+
+2022-12-01
+
+--WebTestBoundary
+Content-Disposition: form-data; name="schedule"
+Content-Type: text/plain
+
+발표
+
+--WebTestBoundary
+Content-Disposition: form-data; name="clothingIds"
+Content-Type: text/plain
+
+1
+
+--WebTestBoundary
+Content-Disposition: form-data; name="addressName"
+Content-Type: text/plain
+
+서울특별시 강남구 역삼동
+
+--WebTestBoundary
+Content-Disposition: form-data; name="maxTemperature"
+Content-Type: text/plain
+
+10
+
+--WebTestBoundary
+Content-Disposition: form-data; name="minTemperature"
+Content-Type: text/plain
+
+5
+
+--WebTestBoundary
+Content-Disposition: form-data; name="precipitationType"
+Content-Type: text/plain
+
+비
+
+--WebTestBoundary
+Content-Disposition: form-data; name="sky"
+Content-Type: text/plain
+
+맑음
+
+--WebTestBoundary--
+Content-Disposition: form-data; name="image"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./test2.jpg
+
+--WebTestBoundary--
 
 ### Delete an outfit
 DELETE http://localhost:30000/api/outfit/1

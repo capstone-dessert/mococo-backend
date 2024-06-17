@@ -38,6 +38,10 @@ public class Outfit {
     @Embedded
     private Weather weather;
 
+    @Lob
+    @Column(name = "image", nullable = false, columnDefinition = "BLOB")
+    private byte[] image;
+
     public void addClothing(Clothing clothing) {
         clothingItems.add(clothing);
         clothing.getOutfits().add(this);

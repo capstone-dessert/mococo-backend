@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,6 +50,11 @@ public class OutfitService {
         weather.setSky(outfitCreateRequest.getSky());
         
         outfit.setWeather(weather);
+        try {
+            outfit.setImage(outfitCreateRequest.getImage().getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image");
+        }
 
         outfitRepository.save(outfit);
     }
@@ -89,6 +95,12 @@ public class OutfitService {
         updateOutfitClothing(outfit, clothingItems);
 
         updateWeather(outfit, outfitUpdateRequest);
+
+        try {
+            outfit.setImage(outfitUpdateRequest.getImage().getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image");
+        }
     }
 
     private void updateWeather(Outfit outfit, OutfitUpdateRequest outfitUpdateRequest) {
@@ -113,5 +125,12 @@ public class OutfitService {
             throw new OutfitNotFoundException();
         }
         outfitRepository.deleteById(id);
+    }
+
+    public byte[] getOutfitImageById(Long id) {
+        Outfit outfit = outfitRepository.findById(id)
+                .orElseThrow(OutfitNotFoundException::new);
+
+        return outfit.getImage();
     }
 }

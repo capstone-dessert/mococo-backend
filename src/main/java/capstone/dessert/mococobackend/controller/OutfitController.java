@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,10 +20,16 @@ public class OutfitController {
 
     private final OutfitService outfitService;
 
-    @PostMapping(path = "/add", consumes = APPLICATION_JSON_VALUE)
-    public void addOutfit(@RequestBody OutfitCreateRequest outfitCreateRequest) {
+    @PostMapping(path = "/add", consumes = MULTIPART_FORM_DATA_VALUE)
+    public void addOutfit(@ModelAttribute OutfitCreateRequest outfitCreateRequest) {
         outfitService.save(outfitCreateRequest);
     }
+
+    @GetMapping(path = "/image/{id}", produces = IMAGE_JPEG_VALUE)
+    public byte[] getOutfitImageById(@PathVariable("id") Long id) {
+        return outfitService.getOutfitImageById(id);
+    }
+
 
     @GetMapping(path = "/all", produces = APPLICATION_JSON_VALUE)
     public List<OutfitResponse> getAllOutfit() {
@@ -40,8 +46,8 @@ public class OutfitController {
         return outfitService.getOutfitByDate(outfitDateRequest);
     }
 
-    @PutMapping(path = "/update", consumes = APPLICATION_JSON_VALUE)
-    public void updateOutfit(@RequestBody OutfitUpdateRequest outfitUpdateRequest) {
+    @PutMapping(path = "/update", consumes = MULTIPART_FORM_DATA_VALUE)
+    public void updateOutfit(@ModelAttribute OutfitUpdateRequest outfitUpdateRequest) {
         outfitService.updateOutfit(outfitUpdateRequest);
     }
 

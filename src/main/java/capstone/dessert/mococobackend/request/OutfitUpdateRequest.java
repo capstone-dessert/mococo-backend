@@ -2,6 +2,7 @@ package capstone.dessert.mococobackend.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,4 +28,6 @@ public class OutfitUpdateRequest {
     private String precipitationType;
 
     private String sky;
+
+    private MultipartFile image;
 }

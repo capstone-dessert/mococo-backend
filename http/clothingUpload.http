@@ -5,19 +5,19 @@ Content-Type: multipart/form-data; boundary=WebTestBoundary
 Content-Disposition: form-data; name="category"
 Content-Type: text/plain
 
-top
+상의
 
 --WebTestBoundary
 Content-Disposition: form-data; name="subcategory"
 Content-Type: text/plain
 
-shirt
+니트
 
 --WebTestBoundary
 Content-Disposition: form-data; name="colors"
 Content-Type: text/plain
 
-Black, White
+black, white
 
 --WebTestBoundary
 Content-Disposition: form-data; name="tags"
