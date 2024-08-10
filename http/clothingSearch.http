@@ -1,0 +1,59 @@
+### Search Clothing by Category Only
+POST http://localhost:30000/api/clothing/search
+Content-Type: application/json
+
+{
+  "category": "Outerwear"
+}
+
+###
+
+### Search Clothing by Category and Subcategory
+POST http://localhost:30000/api/clothing/search
+Content-Type: application/json
+
+{
+  "category": "Outerwear",
+  "subcategory": "Jacket"
+}
+
+###
+
+### Search Clothing by Colors
+POST http://localhost:30000/api/clothing/search
+Content-Type: application/json
+
+{
+  "colors": ["red", "blue"]
+}
+
+###
+
+### Search Clothing by Tags
+POST http://localhost:30000/api/clothing/search
+Content-Type: application/json
+
+{
+  "tags": ["winter", "summer"]
+}
+
+###
+
+### Search Clothing by Combination of All Criteria
+POST http://localhost:30000/api/clothing/search
+Content-Type: application/json
+
+{
+  "category": "Outerwear",
+  "subcategory": "Jacket",
+  "colors": ["Black"],
+  "tags": ["formal", "winter"]
+}
+
+###
+POST http://localhost:30000/api/clothing/search
+Content-Type: application/json
+
+{
+  "styles": ["페미닌"]
+}

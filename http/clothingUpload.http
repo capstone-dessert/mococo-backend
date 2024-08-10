@@ -1,0 +1,40 @@
+POST http://localhost:30000/api/clothing/add
+Content-Type: multipart/form-data; boundary=WebTestBoundary
+
+--WebTestBoundary
+Content-Disposition: form-data; name="category"
+Content-Type: text/plain
+
+상의
+
+--WebTestBoundary
+Content-Disposition: form-data; name="subcategory"
+Content-Type: text/plain
+
+니트
+
+--WebTestBoundary
+Content-Disposition: form-data; name="colors"
+Content-Type: text/plain
+
+black, white
+
+--WebTestBoundary
+Content-Disposition: form-data; name="tags"
+Content-Type: text/plain
+
+winter
+
+--WebTestBoundary
+Content-Disposition: form-data; name="styles"
+Content-Type: text/plain
+
+댄디, 포멀
+
+--WebTestBoundary
+Content-Disposition: form-data; name="image"; filename="test2.jpg"
+Content-Type: image/jpeg
+
+< ./test2.jpg
+
+--WebTestBoundary--
